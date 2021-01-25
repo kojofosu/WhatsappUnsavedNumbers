@@ -9,8 +9,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.hbb20.CountryCodePicker;
+
 public class MainActivity extends AppCompatActivity {
 
+    CountryCodePicker countryCodePicker;
     EditText inputNumberEt;
     Button startChatBtn;
 
@@ -22,15 +25,15 @@ public class MainActivity extends AppCompatActivity {
         init();
 
 
+        String countryCode = countryCodePicker.getSelectedCountryCodeWithPlus();
 
         startChatBtn.setOnClickListener(view -> {
-            String phoneNumber = inputNumberEt.getText().toString();
+            String phoneNumber = countryCode + inputNumberEt.getText().toString();
             if (phoneNumber.isEmpty()) {
                 Toast.makeText(this, "Phone number cannot be empty.", Toast.LENGTH_SHORT).show();
             } else {
                 openWhatsApp(phoneNumber);
             }
-
         });
 
     }
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         inputNumberEt = findViewById(R.id.etInputNumber);
         startChatBtn = findViewById(R.id.btnStartChat);
+        countryCodePicker = findViewById(R.id.countryCodePicker);
     }
 
     private void openWhatsApp(String phoneNumber) {
