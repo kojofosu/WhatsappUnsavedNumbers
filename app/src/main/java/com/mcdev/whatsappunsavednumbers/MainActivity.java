@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openWhatsApp(String phoneNumber) {
-        String url = "https://api.whatsapp.com/send?phone=" + phoneNumber;
+        String url = getString(R.string.whatsapp_send_message_base_url) + phoneNumber;
 
         Intent openWhatsAppIntent = new Intent(Intent.ACTION_VIEW);
         openWhatsAppIntent.setData(Uri.parse(url));
