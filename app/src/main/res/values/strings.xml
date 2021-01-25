@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WhatsappUnsavedNumbers</string>
+    <string name="app_name">WUN</string>
     <string name="whatsapp_send_message_base_url">https://api.whatsapp.com/send?phone=</string>
     <string name="start_chat">Start Chat</string>
     <string name="whatsapp_an_unsaved_number">WhatsApp an unsaved number.</string>
