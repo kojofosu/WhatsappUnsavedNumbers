@@ -10,7 +10,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/whatsapp_an_unsaved_number"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textSize="20sp"
+        android:layout_marginTop="60dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
