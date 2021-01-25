@@ -51,4 +51,26 @@
         android:layout_centerInParent="true"
         android:layout_marginTop="20dp"/>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@mipmap/logo"
+            android:layout_marginBottom="30dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_version"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+
 </RelativeLayout>
