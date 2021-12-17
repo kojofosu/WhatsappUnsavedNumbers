@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
 }
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 31
@@ -41,4 +42,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     //country code picker library
     implementation 'com.hbb20:ccp:2.4.5'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }
