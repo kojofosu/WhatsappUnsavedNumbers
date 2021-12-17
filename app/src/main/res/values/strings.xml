@@ -4,4 +4,5 @@
     <string name="start_chat">Start Chat</string>
     <string name="whatsapp_an_unsaved_number">WhatsApp an unsaved number.</string>
     <string name="app_version">v 1.0</string>
+    <string name="phone_number_cannot_be_null">Phone number cannot be empty</string>
 </resources>

@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnStartChat.setOnClickListener {
             val phoneNumber = countryCode + binding.etInputNumber.text.toString()
             if (phoneNumber.isEmpty()) {
-                Toast.makeText(this, "Phone number cannot be empty.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.phone_number_cannot_be_null, Toast.LENGTH_SHORT).show()
             } else {
                 openWhatsApp(phoneNumber)
             }
