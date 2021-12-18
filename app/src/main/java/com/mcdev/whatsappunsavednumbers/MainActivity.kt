@@ -2,13 +2,13 @@ package com.mcdev.whatsappunsavednumbers
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.WindowManager
 import android.widget.Toast
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.util.Log
-import android.view.LayoutInflater
 import com.mcdev.whatsappunsavednumbers.databinding.ActivityMainBinding
+import com.mcdev.whatsappunsavednumbers.utils.BASE_URL
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -19,23 +19,32 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val root = binding.root
         setContentView(root)
-        //window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
+        binding.countryCodePicker.apply {
+            contentColor = Color.GRAY
+            setArrowColor(Color.GRAY)
+        }
         binding.btnStartChat.setOnClickListener {
             val countryCode = binding.countryCodePicker.selectedCountryCodeWithPlus
             Log.d(TAG, "onCreate: country code is $countryCode")
-            val phoneNumber = countryCode + binding.etInputNumber.text.toString()
-            if (phoneNumber.isEmpty() || phoneNumber.isBlank()) {
+            val restOfPhoneNumber = binding.etInputNumber.text.toString()
+            val phoneNumber = countryCode + restOfPhoneNumber
+            if (restOfPhoneNumber.isEmpty() || restOfPhoneNumber.isBlank()) {
                 Toast.makeText(this, R.string.phone_number_cannot_be_null, Toast.LENGTH_SHORT).show()
             } else {
-                openWhatsApp(phoneNumber)
+                try {
+                    openWhatsApp(phoneNumber)
+                } catch (e: Exception) {
+                    Log.e(TAG, "onCreate: Error occurred.", e)
+                    Toast.makeText(applicationContext, "Error occurred. Try again with a valid number", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
 
     private fun openWhatsApp(phoneNumber: String) {
         Log.d(TAG, "onCreate: Starting chat with $phoneNumber")
-        val url = getString(R.string.whatsapp_send_message_base_url) + phoneNumber
+        val url = BASE_URL + phoneNumber
         val openWhatsAppIntent = Intent(Intent.ACTION_VIEW)
         openWhatsAppIntent.data = Uri.parse(url)
         startActivity(openWhatsAppIntent)
