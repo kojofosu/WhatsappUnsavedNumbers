@@ -1,3 +1,5 @@
+[![Build Status](https://app.bitrise.io/app/a272bfa96dba147d/status.svg?token=DtyOBQM381BZwITCmYo2IQ&branch=master)](https://app.bitrise.io/app/a272bfa96dba147d)
+
 # WhatsappUnsavedNumbers
 Allows users to send a whatsapp message to a number they do not necessarily want to save in their list of contacts.
 
