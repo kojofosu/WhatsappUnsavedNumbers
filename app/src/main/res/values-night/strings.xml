@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="whatsapp_send_message_base_url">https://api.whatsapp.com/send?phone=</string>
-    <string name="app_version">v 1.0</string>
-</resources>
