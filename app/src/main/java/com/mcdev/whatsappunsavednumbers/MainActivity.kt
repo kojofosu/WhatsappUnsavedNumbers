@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
             contentColor = Color.GRAY
             setArrowColor(Color.GRAY)
         }
+
         binding.btnStartChat.setOnClickListener {
             val countryCode = binding.countryCodePicker.selectedCountryCodeWithPlus
             Log.d(TAG, "onCreate: country code is $countryCode")
