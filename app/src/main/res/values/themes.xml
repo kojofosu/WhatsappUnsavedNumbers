@@ -1,16 +1,37 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.WhatsappUnsavedNumbers" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.WUN" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/teal_700</item>
         <item name="colorPrimaryVariant">@color/teal_700</item>
         <item name="colorOnPrimary">@color/white</item>
+        <item name="android:windowBackground">@color/whatsapp_green</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
+        <item name="statusBarBackground">@color/whatsapp_green</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/whatsapp_green</item>
         <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.WUN.TextView" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Theme.WUN.EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="Theme.WUN.Button" parent="TextAppearance.AppCompat.Button">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+
+    <style name="Theme.WUN.CCP" parent="ThemeOverlay.Material3.Dialog">
+        <item name="ccpDialog_background">@color/white</item>
+        <item name="ccpDialog_textColor">@android:color/black</item>
+        <item name="ccpDialog_cornerRadius">10dp</item>
     </style>
 </resources>

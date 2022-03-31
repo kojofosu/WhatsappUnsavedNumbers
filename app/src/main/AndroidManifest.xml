@@ -8,7 +8,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/logo"
         android:supportsRtl="true"
-        android:theme="@style/Theme.WhatsappUnsavedNumbers">
+        android:theme="@style/Theme.WUN">
         <activity android:name="com.mcdev.wun.MainActivity"
             android:exported="true">
             <intent-filter>
