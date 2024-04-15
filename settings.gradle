@@ -1,2 +1,9 @@
 include ':app'
 rootProject.name = "WUN"
+
+//pluginManagement {
+//    repositories {
+//        google()
+//        mavenCentral()
+//    }
+//}
