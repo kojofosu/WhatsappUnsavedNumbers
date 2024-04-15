@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
+
 plugins {
     id  ("com.android.application")
     id ("kotlin-android")
@@ -11,7 +13,7 @@ android {
         compileSdk  =34
         versionCode = 2
         versionName = "1.1"
-        setProperty("archivesBaseName", "WUN-v${versionName}")
+        archivesName = "WUN-v${versionName}"
 
         testInstrumentationRunner  = "androidx.test.runner.AndroidJUnitRunner"
     }
