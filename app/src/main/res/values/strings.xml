@@ -3,4 +3,5 @@
     <string name="start_chat">Start Chat</string>
     <string name="whatsapp_an_unsaved_number">Send a message to anyone on WhatsApp without having to save their contact</string>
     <string name="phone_number_cannot_be_null">Phone number cannot be empty</string>
+    <string name="title_activity_main_screen">MainScreen</string>
 </resources>
