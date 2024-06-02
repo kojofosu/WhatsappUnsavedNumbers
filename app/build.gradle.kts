@@ -85,7 +85,12 @@ dependencies {
     implementation("androidx.compose.material:material")
     implementation("androidx.compose.runtime:runtime-livedata")
     implementation("androidx.compose.ui:ui-tooling")
+
+    implementation ("com.airbnb.android:lottie-compose:6.4.0")
+
 }
 repositories {
     mavenCentral()
+    maven {
+        url=uri("https://oss.sonatype.org/content/repositories/snapshots/") }
 }
