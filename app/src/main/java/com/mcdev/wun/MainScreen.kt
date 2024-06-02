@@ -1,12 +1,12 @@
 package com.mcdev.wun
 
-import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,26 +15,33 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.hbb20.CountryCodePicker
 import com.mcdev.wun.ui.theme.WUNTheme
+import com.mcdev.wun.utils.searchNumberOnWhatsapp
 
 class MainScreen : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -46,8 +53,16 @@ class MainScreen : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(contentPadding)
+                            .padding(vertical = 50.dp)
                     ) {
                         Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+                            val context = LocalContext.current
+                            var text by rememberSaveable {
+                                mutableStateOf("")
+                            }
+                            var countryCodeText by remember {
+                                mutableStateOf("")
+                            }
                             Text(
                                 text = "Send a message to anyone on WhatsApp without needing to save their contact",
                                 modifier = Modifier.padding(horizontal = 10.dp),
@@ -60,10 +75,26 @@ class MainScreen : ComponentActivity() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(100.dp)
-                                    .padding(horizontal = 10.dp, vertical = 20.dp)
+                                    .padding(horizontal = 10.dp, vertical = 20.dp),
+                                value = text,
+                                onValueChange = { countryCode, phoneNumber ->
+                                    text = phoneNumber
+                                    countryCodeText = countryCode
+                                }
                             )
+                            TextButton(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 10.dp),
+                                shape = RoundedCornerShape(size = 10.dp),
+                                contentPadding = PaddingValues(all = 20.dp),
+                                onClick = {
+                                    val completePhoneNumber = countryCodeText + text
+                                    completePhoneNumber.searchNumberOnWhatsapp(context)
+                                }) {
+                                Text("START CHAT", color = Color.Black)
+                            }
                         }
-
                     }
                 }
 
@@ -73,22 +104,45 @@ class MainScreen : ComponentActivity() {
 }
 
 @Composable
-fun MyTextInputField(modifier: Modifier = Modifier) {
+fun MyTextInputField(
+    modifier: Modifier = Modifier,
+    value: String,
+    onValueChange: (String, String) -> Unit
+) {
+
     var text by rememberSaveable {
         mutableStateOf("")
     }
+    var countryCode by remember {
+        mutableStateOf("")
+    }
+
     OutlinedTextField(
         modifier = modifier,
         shape = RoundedCornerShape(size = 10.dp),
-        value = text,
+        value = value,
+        label = {
+            Text(text = "Phone Number")
+        },   colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = colorResource(id = R.color.black), // Outline color when focused
+        ),
         textStyle = androidx.compose.ui.text.TextStyle(
             fontSize = 18.sp,
-            color = androidx.compose.ui.graphics.Color.Black,
+            letterSpacing = 1.sp,
+            color = Color.Black,
+            background = Color.White,
             textAlign = TextAlign.Start // Center the text (and thus the cursor)
         ),
-        singleLine = true,
+        singleLine = true, keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Number
+        ),
         onValueChange = {
-            text = it
+            // Ensure only numbers are allowed
+            if (it.all { char -> char.isDigit() }) {
+                text = it
+            }
+            onValueChange(countryCode, text)
         },
         leadingIcon = {
             Box(
@@ -98,8 +152,11 @@ fun MyTextInputField(modifier: Modifier = Modifier) {
                 contentAlignment = Alignment.Center
             ) {
                 CountryCodePicker(
-                    modifier = Modifier.
-                    wrapContentSize()
+                    modifier = Modifier.wrapContentSize(),
+                    onValueChange = {
+                        countryCode = it
+                        onValueChange(countryCode, text)
+                    }
                 )
             }
         }
@@ -107,7 +164,7 @@ fun MyTextInputField(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun CountryCodePicker(modifier: Modifier) {
+fun CountryCodePicker(modifier: Modifier, onValueChange: (String) -> Unit) {
     AndroidView(modifier = modifier,
         factory = { context ->
             CountryCodePicker(context).apply {
@@ -117,19 +174,14 @@ fun CountryCodePicker(modifier: Modifier) {
                 this.showFlag(true)
                 this.setShowPhoneCode(true)
                 this.showArrow(true)
-                this.contentColor = Color.GRAY
-                this.setArrowColor(Color.GRAY)
+                this.contentColor = R.color.grey
+                this.setArrowColor(android.R.color.darker_gray)
             }
         },
         update = {
-
+            it.setOnCountryChangeListener {
+                onValueChange(it.selectedCountryCodeWithPlus)
+            }
+            onValueChange(it.selectedCountryCodeWithPlus)
         })
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = 0)
-@Composable
-fun GreetingPreview() {
-    WUNTheme {
-        MyTextInputField()
-    }
 }
