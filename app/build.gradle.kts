@@ -87,6 +87,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling")
 
     implementation ("com.airbnb.android:lottie-compose:6.4.0")
+    implementation ("com.googlecode.libphonenumber:libphonenumber:9.0.32")
 
 }
 repositories {

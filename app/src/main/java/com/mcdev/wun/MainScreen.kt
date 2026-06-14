@@ -1,9 +1,21 @@
 package com.mcdev.wun
 
+import InwardCaveShape
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,8 +31,13 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -31,6 +48,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -44,13 +62,19 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.google.i18n.phonenumbers.Phonenumber
 import com.hbb20.CountryCodePicker
 import com.mcdev.wun.ui.theme.WUNTheme
 import com.mcdev.wun.utils.searchNumberOnWhatsapp
+import java.util.Locale
 
 class MainScreen : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val phoneNumberUtil = PhoneNumberUtil.getInstance()
+        val rawPhoneNumber: Phonenumber.PhoneNumber = Phonenumber.PhoneNumber()
         enableEdgeToEdge()
         setContent {
             WUNTheme {
@@ -62,8 +86,16 @@ class MainScreen : ComponentActivity() {
                             .padding(contentPadding)
                             .padding(vertical = 50.dp)
                     ) {
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                            Loader(modifier = Modifier.height(200.dp).width(200.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Loader(
+                                modifier = Modifier
+                                    .padding(100.dp)
+                                    .height(200.dp)
+                                    .width(200.dp)
+                            )
 
                         }
                         Column(modifier = Modifier.align(Alignment.BottomCenter)) {
@@ -74,26 +106,60 @@ class MainScreen : ComponentActivity() {
                             var countryCodeText by remember {
                                 mutableStateOf("")
                             }
+                            var visi by remember { mutableStateOf(true) }
 
                             Text(
                                 text = "Send a message to anyone on WhatsApp without needing to save their contact",
-                                modifier = Modifier.padding(horizontal = 10.dp),
+                                modifier = Modifier
+                                    .padding(horizontal = 10.dp)
+                                    .clickable {
+                                        visi = !visi
+                                    },
                                 fontSize = 15.sp,
                                 letterSpacing = 0.sp,
                                 lineHeight = 15.sp,
                                 textAlign = TextAlign.Center
                             )
-                            MyTextInputField(
+                            Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(100.dp)
-                                    .padding(horizontal = 10.dp, vertical = 20.dp),
-                                value = text,
-                                onValueChange = { countryCode, phoneNumber ->
-                                    text = phoneNumber
-                                    countryCodeText = countryCode
-                                }
-                            )
+                            ) {
+
+                                MyTextInputField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f)
+                                        .height(100.dp)
+                                        .padding(horizontal = 10.dp, vertical = 20.dp),
+                                    value = text,
+                                    onValueChange = { countryCode, phoneNumber ->
+                                        Log.d(
+                                            "MainScreen",
+                                            "onCreate: countryCode: $countryCode, phoneNumber: $phoneNumber"
+                                        )
+                                        // removing the plus sign
+                                        val countryCodeWithoutPlus =
+                                            countryCodeText.replace("+", "").toIntOrNull()
+                                        text = phoneNumber
+                                        countryCodeText = countryCode
+                                        val locale = Locale.getDefault()
+                                        rawPhoneNumber.setCountryCode(countryCodeWithoutPlus ?: 1)
+                                    }
+                                )
+//
+//                                AnimatedVisibility(visible =  text.isNotBlank()) {
+//                                    CountryCodePicker(
+//                                        modifier = Modifier
+//                                            .wrapContentSize()
+//                                            .padding(horizontal = 10.dp, vertical = 20.dp),
+//                                        onValueChange = {
+//
+//                                        }
+//                                    )
+//                                }
+
+                            }
+
                             TextButton(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -104,7 +170,7 @@ class MainScreen : ComponentActivity() {
                                     val completePhoneNumber = countryCodeText + text
                                     completePhoneNumber.searchNumberOnWhatsapp(context)
                                 }) {
-                                Text("START CHAT", color = Color.Black)
+                                Text(getString(R.string.start_chat), color = Color.Black)
                             }
                         }
                     }
@@ -135,7 +201,7 @@ fun MyTextInputField(
         value = value,
         label = {
             Text(text = "Phone Number")
-        },   colors = TextFieldDefaults.outlinedTextFieldColors(
+        }, colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = colorResource(id = R.color.black), // Outline color when focused
         ),
         textStyle = androidx.compose.ui.text.TextStyle(
@@ -145,7 +211,8 @@ fun MyTextInputField(
             background = Color.White,
             textAlign = TextAlign.Start // Center the text (and thus the cursor)
         ),
-        singleLine = true, keyboardOptions = KeyboardOptions.Default.copy(
+        singleLine = true,
+        keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Done,
             keyboardType = KeyboardType.Number
         ),
@@ -171,13 +238,55 @@ fun MyTextInputField(
                     }
                 )
             }
+        },
+        trailingIcon = {
+            AnimatedVisibility(
+                visible = text.isNotBlank(),
+                enter = slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                ) + fadeIn(),
+                exit = slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(
+                        durationMillis = 300
+                    )
+                ) + fadeOut()
+            ) {
+                IconButton(onClick = {
+                    // Handle send action here
+                    text = ""
+                }) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.primary,
+//                                shape = InwardCaveShape(curveRadius = -40f) // Adjust the curveRadius as needed
+                            )
+                            .padding(16.dp) // Adjust padding as needed
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .clip(InwardCaveShape(curveRadius = 40f)) // Apply the custom shape
+                            ,
+                            imageVector = Icons.Default.Send,
+                            contentDescription = "Send",
+                            tint = Color.White // Adjust color as needed
+                        )
+                    }
+                }
+            }
         }
     )
 }
 
 @Composable
 fun CountryCodePicker(modifier: Modifier, onValueChange: (String) -> Unit) {
-    AndroidView(modifier = modifier,
+    AndroidView(
+        modifier = modifier,
         factory = { context ->
             CountryCodePicker(context).apply {
                 this.setAutoDetectedCountry(true)
