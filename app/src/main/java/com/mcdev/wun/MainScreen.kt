@@ -1,5 +1,6 @@
 package com.mcdev.wun
 
+//import androidx.compose.material.OutlinedTextField
 import InwardCaveShape
 import android.os.Bundle
 import android.util.Log
@@ -15,7 +16,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,12 +32,12 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.IconButton
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -51,7 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -67,7 +67,6 @@ import com.google.i18n.phonenumbers.Phonenumber
 import com.hbb20.CountryCodePicker
 import com.mcdev.wun.ui.theme.WUNTheme
 import com.mcdev.wun.utils.searchNumberOnWhatsapp
-import java.util.Locale
 
 class MainScreen : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,6 +74,7 @@ class MainScreen : ComponentActivity() {
 
         val phoneNumberUtil = PhoneNumberUtil.getInstance()
         val rawPhoneNumber: Phonenumber.PhoneNumber = Phonenumber.PhoneNumber()
+
         enableEdgeToEdge()
         setContent {
             WUNTheme {
@@ -90,7 +90,7 @@ class MainScreen : ComponentActivity() {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
                         ) {
-                            Loader(
+                            LottieView(
                                 modifier = Modifier
                                     .padding(100.dp)
                                     .height(200.dp)
@@ -106,60 +106,32 @@ class MainScreen : ComponentActivity() {
                             var countryCodeText by remember {
                                 mutableStateOf("")
                             }
-                            var visi by remember { mutableStateOf(true) }
 
-                            Text(
-                                text = "Send a message to anyone on WhatsApp without needing to save their contact",
-                                modifier = Modifier
-                                    .padding(horizontal = 10.dp)
-                                    .clickable {
-                                        visi = !visi
-                                    },
-                                fontSize = 15.sp,
-                                letterSpacing = 0.sp,
-                                lineHeight = 15.sp,
-                                textAlign = TextAlign.Center
-                            )
-                            Row(
+                            // Subtitle
+                            SubtitleTextView(text = stringResource(id = R.string.whatsapp_an_unsaved_number))
+
+                            // phone number view
+                            PhoneNumberView(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                            ) {
+                                    .height(100.dp)
+                                    .padding(horizontal = 10.dp, vertical = 20.dp),
+                                value = text,
+                                onValueChange = { countryCode, phoneNumber ->
+                                    Log.d(
+                                        "MainScreen",
+                                        "onCreate: countryCode: $countryCode, phoneNumber: $phoneNumber"
+                                    )
+                                    // removing the plus sign
+                                    val countryCodeWithoutPlus =
+                                        countryCodeText.replace("+", "").toIntOrNull()
+                                    text = phoneNumber
+                                    countryCodeText = countryCode
+                                    rawPhoneNumber.setCountryCode(countryCodeWithoutPlus ?: 1)
+                                }
+                            )
 
-                                MyTextInputField(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .weight(1f)
-                                        .height(100.dp)
-                                        .padding(horizontal = 10.dp, vertical = 20.dp),
-                                    value = text,
-                                    onValueChange = { countryCode, phoneNumber ->
-                                        Log.d(
-                                            "MainScreen",
-                                            "onCreate: countryCode: $countryCode, phoneNumber: $phoneNumber"
-                                        )
-                                        // removing the plus sign
-                                        val countryCodeWithoutPlus =
-                                            countryCodeText.replace("+", "").toIntOrNull()
-                                        text = phoneNumber
-                                        countryCodeText = countryCode
-                                        val locale = Locale.getDefault()
-                                        rawPhoneNumber.setCountryCode(countryCodeWithoutPlus ?: 1)
-                                    }
-                                )
-//
-//                                AnimatedVisibility(visible =  text.isNotBlank()) {
-//                                    CountryCodePicker(
-//                                        modifier = Modifier
-//                                            .wrapContentSize()
-//                                            .padding(horizontal = 10.dp, vertical = 20.dp),
-//                                        onValueChange = {
-//
-//                                        }
-//                                    )
-//                                }
-
-                            }
-
+                            // start chat button
                             TextButton(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -170,7 +142,7 @@ class MainScreen : ComponentActivity() {
                                     val completePhoneNumber = countryCodeText + text
                                     completePhoneNumber.searchNumberOnWhatsapp(context)
                                 }) {
-                                Text(getString(R.string.start_chat), color = Color.Black)
+                                Text(stringResource(R.string.start_chat), color = Color.Black)
                             }
                         }
                     }
@@ -181,8 +153,9 @@ class MainScreen : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTextInputField(
+fun PhoneNumberView(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String, String) -> Unit
@@ -199,11 +172,9 @@ fun MyTextInputField(
         modifier = modifier,
         shape = RoundedCornerShape(size = 10.dp),
         value = value,
-        label = {
-            Text(text = "Phone Number")
-        }, colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = colorResource(id = R.color.black), // Outline color when focused
-        ),
+        label = @Composable {
+            Text(text = stringResource(id = R.string.phone_number))
+        },
         textStyle = androidx.compose.ui.text.TextStyle(
             fontSize = 18.sp,
             letterSpacing = 1.sp,
@@ -308,12 +279,25 @@ fun CountryCodePicker(modifier: Modifier, onValueChange: (String) -> Unit) {
 }
 
 @Composable
-fun Loader(modifier: Modifier) {
+fun LottieView(modifier: Modifier) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.what_smile))
     val progress by animateLottieCompositionAsState(composition)
     LottieAnimation(
         modifier = modifier,
         composition = composition,
         progress = { progress },
+    )
+}
+
+@Composable
+fun SubtitleTextView(text: String) {
+    Text(
+        text = text,
+        modifier = Modifier
+            .padding(horizontal = 10.dp),
+        fontSize = 17.sp,
+        letterSpacing = 0.sp,
+        lineHeight = 15.sp,
+        textAlign = TextAlign.Center
     )
 }
