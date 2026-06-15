@@ -161,6 +161,7 @@ fun PhoneNumberView(
     onValueChange: (String, String) -> Unit
 ) {
 
+    val context = LocalContext.current
     var text by rememberSaveable {
         mutableStateOf("")
     }
@@ -229,7 +230,12 @@ fun PhoneNumberView(
             ) {
                 IconButton(onClick = {
                     // Handle send action here
-                    text = ""
+                    Log.d(
+                        "MainScreen",
+                        "PhoneNumberView: Country code: $countryCode, phone number: $text"
+                    )
+                    val completePhoneNumber = countryCode + text
+                    completePhoneNumber.searchNumberOnWhatsapp(context)
                 }) {
                     Box(
                         modifier = Modifier
