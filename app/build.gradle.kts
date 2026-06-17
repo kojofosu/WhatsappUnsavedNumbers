@@ -9,10 +9,10 @@ android {
     namespace = "com.mcdev.wun"
     defaultConfig {
         minSdk = 23
-        targetSdk =34
-        compileSdk  =34
-        versionCode = 3
-        versionName = "2.0"
+        targetSdk = 35
+        compileSdk = 35
+        versionCode = 4
+        versionName = "2.1"
         archivesName = "WUN-v${versionName}"
 
         testInstrumentationRunner  = "androidx.test.runner.AndroidJUnitRunner"
